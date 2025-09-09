@@ -1,125 +1,92 @@
-body {
-    margin: 0;
-    padding: 0;
-    background: #0f0f0f;
-    color: #e0e0e0;
-    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-image: url('https://api.rls.ovh/adaptive');
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center;
+const MD5_REGEX = /^[a-fA-F0-9]{32}$/;
+const queryBtn = document.getElementById('query-btn');
+const md5Input = document.getElementById('md5-input');
+const resultDiv = document.getElementById('result');
+const clearCacheBtn = document.getElementById('clear-cache-btn');
+
+const CACHE_KEY = "password_cache";
+
+function loadCache() {
+    try {
+        return JSON.parse(localStorage.getItem(CACHE_KEY)) || {};
+    } catch {
+        return {};
+    }
 }
 
-.container {
-    text-align: center;
-    background: rgba(42, 42, 42, 0.75);
-    backdrop-filter: blur(12px);
-    padding: 40px 35px;
-    border-radius: 16px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+function saveCache(cache) {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
 }
 
-h1 {
-    margin-bottom: 20px;
-    font-size: 22px;
-    font-weight: 600;
-    color: #fff;
+function setButtonLoading(loading) {
+    if (loading) {
+        queryBtn.classList.add("loading");
+        queryBtn.disabled = true;
+    } else {
+        queryBtn.classList.remove("loading");
+        queryBtn.disabled = false;
+    }
 }
 
-.input-group {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 20px;
+async function handleQuery() {
+    const md5 = md5Input.value.trim();
+    if (!MD5_REGEX.test(md5)) {
+        resultDiv.textContent = "❌ MD5格式不正确";
+        resultDiv.style.color = "#ff6b6b";
+        return;
+    }
+
+    setButtonLoading(true);
+    resultDiv.style.opacity = 0;
+
+    let password = null;
+    let cache = loadCache();
+
+    if (cache[md5]) {
+        password = cache[md5];
+        console.log("缓存命中:", md5);
+    } else {
+        try {
+            const resp = await fetch('https://raw.githubusercontent.com/Karune-SHI-E/1111/master/passwords_local.json');
+            if (resp.ok) {
+                const data = await resp.json();
+                if (data[md5]) {
+                    password = data[md5];
+                    cache[md5] = password;
+                    saveCache(cache);
+                }
+            }
+        } catch (e) {
+            console.warn("GitHub 查询失败:", e);
+        }
+    }
+
+    if (password) {
+        resultDiv.textContent = `🔑 密码: ${password}`;
+        resultDiv.style.color = "#4caf50";
+    } else {
+        resultDiv.textContent = "❌ 未找到密码";
+        resultDiv.style.color = "#ff6b6b";
+    }
+
+    requestAnimationFrame(() => {
+        resultDiv.style.opacity = 1;
+    });
+
+    setButtonLoading(false);
 }
 
-input {
-    padding: 12px 14px;
-    width: 280px;
-    border-radius: 8px;
-    border: 1px solid #444;
-    background: #1e1e1e;
-    color: #fff;
-    outline: none;
-    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
-    transition: border 0.3s, box-shadow 0.3s;
-}
-input:focus {
-    border: 1px solid #4caf50;
-    box-shadow: 0 0 10px rgba(76, 175, 80, 0.6);
-}
+// 点击按钮
+queryBtn.addEventListener('click', handleQuery);
 
-button {
-    position: relative;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #4caf50, #2e7d32);
-    color: white;
-    overflow: hidden;
-}
+// 回车触发
+md5Input.addEventListener('keypress', e => {
+    if (e.key === "Enter") handleQuery();
+});
 
-button:hover:not(:disabled) {
-    background: linear-gradient(135deg, #66bb6a, #388e3c);
-    transform: scale(1.05);
-}
-
-button:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-/* 按钮文字和加载动画 */
-.btn-text {
-    display: inline-block;
-}
-.loader {
-    display: none;
-    width: 18px;
-    height: 18px;
-    border: 3px solid #fff;
-    border-top: 3px solid transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-left: 5px;
-}
-button.loading .btn-text {
-    display: none;
-}
-button.loading .loader {
-    display: inline-block;
-}
-
-@keyframes spin {
-    100% { transform: rotate(360deg); }
-}
-
-/* 结果展示 */
-#result {
-    margin-top: 18px;
-    font-weight: bold;
-    font-size: 16px;
-    min-height: 24px;
-    transition: opacity 0.5s ease;
-}
-
-/* 清空缓存按钮 */
-.clear-btn {
-    margin-top: 15px;
-    background: #d32f2f;
-    background: linear-gradient(135deg, #e53935, #b71c1c);
-    font-size: 14px;
-}
-.clear-btn:hover {
-    background: linear-gradient(135deg, #ef5350, #c62828);
-}
+// 清空缓存
+clearCacheBtn.addEventListener('click', () => {
+    localStorage.removeItem(CACHE_KEY);
+    resultDiv.textContent = "🗑️ 缓存已清空";
+    resultDiv.style.color = "#ff9800";
+});

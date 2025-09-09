@@ -17,7 +17,7 @@ queryBtn.addEventListener('click', async () => {
     try {
         let password = null;
 
-        const resp = await fetch('https://raw.githubusercontent.com/Karune-SHI-E/1111/master/passwords_local.json');
+        const resp = await fetch('https://gitee.com/karune-shi-e/imgea/raw/master/passwords_local.json');
         if (resp.ok) {
             const data = await resp.json();
 

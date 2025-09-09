@@ -25,19 +25,6 @@ queryBtn.addEventListener('click', async () => {
             console.warn("GitHub 查询失败:", e);
         }
 
-        // 自建服务器查询（备用）
-        if (!password) {
-            try {
-                const resp2 = await fetch(`http://127.0.0.1:5000/query/${md5}?user_id=YOUR_ID`);
-                if (resp2.ok) {
-                    const j = await resp2.json();
-                    if (j.password) password = j.password;
-                }
-            } catch (e) {
-                console.warn("自建服务器查询失败:", e);
-            }
-        }
-
         if (password) {
             resultDiv.textContent = `🔑 密码: ${password}`;
         } else {

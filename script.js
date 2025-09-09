@@ -15,7 +15,7 @@ queryBtn.addEventListener('click', async () => {
         let password = null;
 
         if (true) { // GitHub 查询
-            const resp = await fetch('https://raw.githubusercontent.com/username/repo/main/passwords.json.gz');
+            const resp = await fetch('https://raw.githubusercontent.com/Karune-SHI-E/1111/master/passwords_local.json.gz');
             if (resp.ok) {
                 const compressed = await resp.arrayBuffer();
                 const decompressed = pako.inflate(new Uint8Array(compressed), { to: 'string' });

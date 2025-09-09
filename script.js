@@ -76,17 +76,7 @@ async function handleQuery() {
     setButtonLoading(false);
 }
 
-// 点击按钮
-queryBtn.addEventListener('click', handleQuery);
-
 // 回车触发
 md5Input.addEventListener('keypress', e => {
     if (e.key === "Enter") handleQuery();
-});
-
-// 清空缓存
-clearCacheBtn.addEventListener('click', () => {
-    localStorage.removeItem(CACHE_KEY);
-    resultDiv.textContent = "🗑️ 缓存已清空";
-    resultDiv.style.color = "#ff9800";
 });

@@ -10,9 +10,10 @@ queryBtn.addEventListener('click', async () => {
         return;
     }
 
-    md5 = md5.toLowerCase(); // 转成小写
+    md5 = md5.toLowerCase(); // 用户输入转小写
 
     resultDiv.textContent = "🔍 查询中...";
+
     try {
         let password = null;
 
@@ -20,7 +21,7 @@ queryBtn.addEventListener('click', async () => {
         if (resp.ok) {
             const data = await resp.json();
 
-            // 把所有 key 都转小写
+            // 遍历所有 key，统一转小写比对
             for (const key in data) {
                 if (key.toLowerCase() === md5) {
                     password = data[key];

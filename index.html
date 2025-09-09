@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MD5密码查询</title>
 <style>
-/* 全局样式 */
 body {
     margin: 0;
     padding: 0;
@@ -22,7 +21,6 @@ body {
     background-position: center;
 }
 
-/* 容器卡片 */
 .container {
     text-align: center;
     background: rgba(42, 42, 42, 0.75);
@@ -53,7 +51,6 @@ h1 {
     margin-bottom: 20px;
 }
 
-/* 输入框 */
 input {
     padding: 12px 14px;
     width: 100%;
@@ -71,7 +68,6 @@ input:focus {
     box-shadow: 0 0 10px rgba(76, 175, 80, 0.6);
 }
 
-/* 按钮 */
 button {
     padding: 12px 24px;
     border: none;
@@ -91,7 +87,6 @@ button:hover {
     transform: scale(1.05);
 }
 
-/* 结果区域 - 初始隐藏 */
 #result {
     margin-top: 18px;
     font-weight: bold;
@@ -100,23 +95,23 @@ button:hover {
     padding: 10px;
     border-radius: 8px;
     background: rgba(30, 30, 30, 0.7);
-    display: none; /* 初始隐藏 */
+    display: none;
 }
 
 .success {
     color: #4caf50;
     text-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
-    display: block; /* 查询结果显示 */
+    display: block;
 }
 
 .error {
     color: #f44336;
-    display: block; /* 错误结果显示 */
+    display: block;
 }
 
 .loading {
     color: #ffd54f;
-    display: block; /* 加载中显示 */
+    display: block;
 }
 
 .info {
@@ -126,7 +121,6 @@ button:hover {
     line-height: 1.5;
 }
 
-/* 响应式设计 */
 @media (max-width: 480px) {
     .container {
         padding: 25px 20px;
@@ -161,15 +155,6 @@ const queryBtn = document.getElementById('query-btn');
 const md5Input = document.getElementById('md5-input');
 const resultDiv = document.getElementById('result');
 
-// 示例数据 - 实际应用中应从外部加载
-const sampleData = {
-    "098f6bcd4621d373cade4e832627b4f6": "test",
-    "5f4dcc3b5aa765d61d8327deb882cf99": "password",
-    "e10adc3949ba59abbe56e057f20f883e": "123456",
-    "25d55ad283aa400af464c76d713c07ad": "12345678",
-    "482c811da5d5b4bc6d497ffa98491e38": "password123"
-};
-
 queryBtn.addEventListener('click', async () => {
     const md5 = md5Input.value.trim();
     
@@ -190,13 +175,15 @@ queryBtn.addEventListener('click', async () => {
         const md5Lower = md5.toLowerCase();
         let password = null;
 
-        // 模拟网络请求延迟
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        // 在实际应用中，这里应该从GitHub加载数据
-        // 为了演示目的，我们使用本地样本数据
-        if (sampleData[md5Lower]) {
-            password = sampleData[md5Lower];
+        // GitHub 查询
+        try {
+            const resp = await fetch('https://raw.githubusercontent.com/Karune-SHI-E/1111/master/passwords_local.json');
+            if (resp.ok) {
+                const data = await resp.json();
+                if (data[md5Lower]) password = data[md5Lower];
+            }
+        } catch (e) {
+            console.warn("GitHub 查询失败:", e);
         }
 
         if (password) {
@@ -213,7 +200,7 @@ queryBtn.addEventListener('click', async () => {
 function showResult(message, className) {
     resultDiv.textContent = message;
     resultDiv.className = className;
-    resultDiv.style.display = "block"; // 确保结果区域显示
+    resultDiv.style.display = "block";
 }
 
 // 添加输入框回车键支持

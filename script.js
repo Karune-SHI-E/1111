@@ -10,29 +10,23 @@ queryBtn.addEventListener('click', async () => {
         return;
     }
 
-    // 转小写
-    md5 = md5.toLowerCase();
+    md5 = md5.toLowerCase(); // 转成小写
 
     resultDiv.textContent = "🔍 查询中...";
     try {
         let password = null;
 
-        // GitHub 查询
-        try {
-            const resp = await fetch('https://raw.githubusercontent.com/Karune-SHI-E/1111/master/passwords_local.json');
-            if (resp.ok) {
-                const data = await resp.json();
+        const resp = await fetch('https://raw.githubusercontent.com/Karune-SHI-E/1111/master/passwords_local.json');
+        if (resp.ok) {
+            const data = await resp.json();
 
-                // 遍历时强制转小写
-                const normalizedData = {};
-                for (const key in data) {
-                    normalizedData[key.toLowerCase()] = data[key];
+            // 把所有 key 都转小写
+            for (const key in data) {
+                if (key.toLowerCase() === md5) {
+                    password = data[key];
+                    break;
                 }
-
-                if (normalizedData[md5]) password = normalizedData[md5];
             }
-        } catch (e) {
-            console.warn("GitHub 查询失败:", e);
         }
 
         if (password) {

@@ -112,14 +112,3 @@ button.loading .loader {
     min-height: 24px;
     transition: opacity 0.5s ease;
 }
-
-/* 清空缓存按钮 */
-.clear-btn {
-    margin-top: 15px;
-    background: #d32f2f;
-    background: linear-gradient(135deg, #e53935, #b71c1c);
-    font-size: 14px;
-}
-.clear-btn:hover {
-    background: linear-gradient(135deg, #ef5350, #c62828);
-}

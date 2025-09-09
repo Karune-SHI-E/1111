@@ -14,7 +14,7 @@ queryBtn.addEventListener('click', async () => {
     try {
         let password = null;
 
-        // GitHub 查询（普通 JSON，不再 gzip）
+        // GitHub
         try {
             const resp = await fetch('https://raw.githubusercontent.com/Karune-SHI-E/1111/master/passwords_local.json');
             if (resp.ok) {
